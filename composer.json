@@ -1,9 +1,9 @@
 {
     "name": "spudro/import-domain",
-    "type": "project",
+    "type": "library",
     "authors": [
         {
-            "name": "Smolyakov",
+            "name": "Smolyakov Dmitry",
             "email": "mompizzapls@mail.ru"
         }
     ],
@@ -25,5 +25,6 @@
         "psr-4": {
             "Mongovno\\Tests\\" : "tests"
         }
-    }
+    },
+    "description": "Async MongoDB client based Amphp."
 }
