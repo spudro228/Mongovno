@@ -1,0 +1,29 @@
+{
+    "name": "spudro/import-domain",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Smolyakov",
+            "email": "mompizzapls@mail.ru"
+        }
+    ],
+    "require": {
+        "amphp/amp": "^2.1",
+        "amphp/socket": "^0.10.11",
+        "ext-json": "*",
+        "ext-mongodb": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "AfmImporter\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AfmImporter\\Tests\\" : "tests"
+        }
+    }
+}
