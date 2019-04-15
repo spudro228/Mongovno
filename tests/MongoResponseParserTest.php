@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use AfmImporter\MessageHeader;
-use AfmImporter\MessageResult;
-use AfmImporter\ResponseParser;
+use Mongovno\MessageHeader;
+use Mongovno\MessageResult;
+use Mongovno\ResponseParser;
 use PHPUnit\Framework\TestCase;
 
 class MongoResponseParserTest extends TestCase

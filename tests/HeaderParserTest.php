@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use AfmImporter\HeaderParser;
-use AfmImporter\MessageHeader;
+use Mongovno\HeaderParser;
+use Mongovno\MessageHeader;
 use PHPUnit\Framework\TestCase;
 
 class HeaderParserTest extends TestCase

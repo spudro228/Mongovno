@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AfmImporter;
+namespace Mongovno;
 
 
 class BsonIterator implements \Iterator

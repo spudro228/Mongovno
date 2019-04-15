@@ -92,7 +92,7 @@ Loop::run(static function () {
 //    while (null !== $chunk = yield $socket->read()) {
 //        yield $stdout->write($chunk);
 //    }
-    $parser = new \AfmImporter\ResponseParser();
+    $parser = new \Mongovno\ResponseParser();
     while (($chunk = yield $socket->read()) !== null) {
         $data = $chunk;
         $data = $parser->parse($data);

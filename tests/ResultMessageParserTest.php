@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use AfmImporter\MessageResult;
-use AfmImporter\ResultMessageParser;
+use Mongovno\MessageResult;
+use Mongovno\ResultMessageParser;
 use PHPUnit\Framework\TestCase;
 
 class ResultMessageParserTest extends TestCase

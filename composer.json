@@ -18,12 +18,12 @@
     },
     "autoload": {
         "psr-4": {
-            "AfmImporter\\": "src"
+            "Mongovno\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "AfmImporter\\Tests\\" : "tests"
+            "Mongovno\\Tests\\" : "tests"
         }
     }
 }
