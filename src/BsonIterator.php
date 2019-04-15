@@ -62,7 +62,7 @@ class BsonIterator implements \Iterator
         if ($this->bufferLength - $this->bufferOffset < $documentLength) {
             throw new \RuntimeException(sprintf('Expected %d bytes; %d remaining', $documentLength, $this->bufferLength - $this->bufferOffset));
         }
-        $this->current = \MongoDB\BSON\toPHP(substr($this->buffer, $this->bufferOffset, $documentLength));
+        $this->current = \MongoDB\BSON\toPHP(substr($this->buffer, $this->bufferOffset, $documentLength), []);
         $this->bufferOffset += $documentLength;
     }
 }
