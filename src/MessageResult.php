@@ -23,15 +23,16 @@ final class MessageResult
      * @var int
      */
     private $numberReturned;
+
     /**
-     * @var \Iterator
+     * @var string
      */
     private $documents;
 
 
     public const MSG_WITHOUT_DATA_SIZE = 20;
 
-    public static function create(int $responseFlags, int $cursorId, int $startingFrom, int $numberReturned, \Iterator $documents): self
+    public static function create(int $responseFlags, int $cursorId, int $startingFrom, int $numberReturned, string $documents): self
     {
         $inst = new self();
         $inst->responseFlags = $responseFlags;
@@ -80,6 +81,19 @@ final class MessageResult
      */
     public function documents(): \Iterator
     {
-        return $this->documents;
+        $offset = 0;
+
+        $dataLength = strlen($this->documents);
+
+        if ($dataLength - $offset < 5) {
+            throw new \RuntimeException(sprintf('Expected at least 5 bytes; %d remaining', $dataLength - $offset));
+        }
+
+        while ($dataLength !== $offset) {
+            [, $documentLength] = unpack('V', substr($this->documents, $offset, 4));
+
+            yield \MongoDB\BSON\toPHP(substr($this->documents, $offset, $documentLength), []);
+            $offset += $documentLength;
+        }
     }
 }

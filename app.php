@@ -68,15 +68,16 @@ Loop::run(static function () {
     $data = pack(
         'Va*xVVa*',
         0,
-        'common.domain',
+        'common.domain_cat',
 //        'common.domain_cat',
         0,
         5,
         MongoDB\BSON\fromPHP(
             [
-                'query' => [
-                ],
-                ['limit' => 5]
+                '$query' => [
+                    '_id' => ['$eq' => 'api.test.site.com'],
+//                    ['filter' => [ '_id'=> ['$eq' => 'api.test.site.com' ]]]
+                ]
 
             ]
         )
@@ -95,7 +96,9 @@ Loop::run(static function () {
     $parser = new \Mongovno\ResponseParser();
     while (($chunk = yield $socket->read()) !== null) {
         $data = $chunk;
-        $data = $parser->parse($data);
+        $parsed = $parser->parse($data);
+        $header = $parsed->header();
+        $data = iterator_to_array($parsed->result()->documents());
         yield $stdout->write("$chunk\n");
 //        echo $chunk.PHP_EOL;
     }
