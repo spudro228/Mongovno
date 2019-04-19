@@ -32,4 +32,9 @@ class ParsingResult
     {
         return $this->resultMessage;
     }
+
+    public function documents(): \Iterator
+    {
+        return $this->resultMessage->documents();
+    }
 }

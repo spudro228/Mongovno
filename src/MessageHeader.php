@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mongovno;
 
 
-final class MessageHeader
+class MessageHeader
 {
     public const MSG_HEADER_SIZE = 16;
 

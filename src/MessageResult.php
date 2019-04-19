@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Mongovno;
 
 
-final class MessageResult
+class MessageResult
 {
     /**
      * @var int
