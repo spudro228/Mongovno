@@ -38,7 +38,7 @@ class Client
     public function request(string $databaseName, string $collectionName, array $query, int $offset = 0, int $limit = 100): Promise
     {
 
-        return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit) {
+        return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit): \Generator {
             //db - name common
             $data = pack(
                 'Va*xVVa*',
@@ -56,9 +56,10 @@ class Client
 
             yield $clientSocket->write($requestMessage);
 
-            $data = yield buffer($clientSocket);
+            /** @var string $blobDataFromMongo */
+            $blobDataFromMongo = yield buffer($clientSocket);
 
-            return $responseParser->parse($data)->documents();
+            return $responseParser->parse($blobDataFromMongo)->documents();
 
         }, $this->clientSocket, $this->responseParser);
 
