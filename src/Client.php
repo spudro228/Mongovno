@@ -7,7 +7,6 @@ namespace Mongovno;
 
 use Amp\Promise;
 use Amp\Socket\ClientSocket;
-use function Amp\ByteStream\buffer;
 use function Amp\call;
 
 class Client
@@ -28,6 +27,7 @@ class Client
     /**
      * Client constructor.
      * @param ClientSocket $clientSocket
+     * @param ResponseParser $responseParser
      */
     public function __construct(ClientSocket $clientSocket, ResponseParser $responseParser)
     {
@@ -35,7 +35,7 @@ class Client
         $this->responseParser = $responseParser;
     }
 
-    public function request(string $databaseName, string $collectionName, array $query, int $offset = 0, int $limit = 100): Promise
+    public function send(string $databaseName, string $collectionName, array $query, int $offset = 0, int $limit = 100): Promise
     {
 
         return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit): \Generator {
@@ -57,7 +57,7 @@ class Client
             yield $clientSocket->write($requestMessage);
 
             /** @var string $blobDataFromMongo */
-            $blobDataFromMongo = yield buffer($clientSocket);
+            $blobDataFromMongo = yield $clientSocket->read();
 
             return $responseParser->parse($blobDataFromMongo)->documents();
 

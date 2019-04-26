@@ -20,6 +20,7 @@ class MongoClientTest extends TestCase
         $socketClientConnection
             ->method('read')
             ->willReturn(\Amp\call(function () {
+                return '';
             }));
 
 
@@ -36,7 +37,7 @@ class MongoClientTest extends TestCase
         \Amp\Loop::run(static function () use ($socketClientConnection, $responseParser) {
             $client = new Mongovno\Client($socketClientConnection, $responseParser);
             /** @var Iterator $response */
-            $response = yield $client->request('common', 'domain_cat', [
+            $response = yield $client->send('common', 'domain_cat', [
                 '$query' => [
                     '_id' => ['$eq' => 'someidentifier'],
                 ],
