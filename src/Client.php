@@ -11,10 +11,6 @@ use function Amp\call;
 
 class Client
 {
-    const MSG_HEADER_SIZE = 16;
-    const OP_QUERY = 2004;
-
-
     /**
      * @var ClientSocket
      */
@@ -35,26 +31,28 @@ class Client
         $this->responseParser = $responseParser;
     }
 
-    public function send(string $databaseName, string $collectionName, Query $query, int $offset = 0, int $limit = 100): Promise
+    public function send(string $databaseName, string $collectionName, Query $query, int $offset = 0, int $limit = 100, int $responseToId = 0): Promise
     {
 
-        return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit): \Generator {
-            //db - name common
-            $data = pack(
-                'Va*xVVa*',
-                0, //flags
+        return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit, $responseToId): \Generator {
+            $opQueryBinaryData =
+                (new \Mongovno\Opcode\Query(
+                    $query,
                 $databaseName . '.' . $collectionName,
+                    0,
                 $offset,
-                $limit,
-                \MongoDB\BSON\fromPHP($query)
-            );
+                    $limit
+                ))->toBinary();
 
-            $requestUid = uniqid('', false);
-            $header = pack('V4', self::MSG_HEADER_SIZE + strlen($data), $requestUid, 0, self::OP_QUERY);
+            $messageHeaderBinaryData =
+                (new MessageHeader(
+                    strlen($opQueryBinaryData),
+                    random_int(0, (2 ** 32) - 1),
+                    $responseToId,
+                    \Mongovno\Opcode\Query::OP_QUERY
+                ))->toBinary();
 
-            $requestMessage = $header . $data;
-
-            yield $clientSocket->write($requestMessage);
+            yield $clientSocket->write($messageHeaderBinaryData . $opQueryBinaryData);
 
             /** @var string $blobDataFromMongo */
             $blobDataFromMongo = yield $clientSocket->read();

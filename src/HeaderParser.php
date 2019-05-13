@@ -20,6 +20,6 @@ class HeaderParser
     {
         $values = array_values(unpack('VmessageLength/VrequestId/VresponseTo/VopCode', substr($data, 0, MessageHeader::MSG_HEADER_SIZE)));
 
-        return MessageHeader::create(...$values);
+        return new MessageHeader(...$values);
     }
 }

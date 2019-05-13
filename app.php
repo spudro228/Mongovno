@@ -44,12 +44,11 @@ Loop::run(static function () {
     $socket = yield connect('tcp://' . $uri);
 
     $mongoClient = new \Mongovno\Client($socket, new \Mongovno\ResponseParser());
-    $data = yield $mongoClient->send('common', 'domain_cat', [
-        '$query' => [
-            '_id' => ['$eq' => 'api.test.site.com'],
-        ]
-
-    ]);
+    $data = yield $mongoClient->send(
+        'common',
+        'domain_cat',
+        new \Mongovno\Query(['_id' => ['$eq' => 'api.test.site.com'],])
+    );
 
     $d = iterator_to_array($data);
     $kek = '';
