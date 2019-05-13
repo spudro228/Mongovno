@@ -35,7 +35,7 @@ class Client
         $this->responseParser = $responseParser;
     }
 
-    public function send(string $databaseName, string $collectionName, array $query, int $offset = 0, int $limit = 100): Promise
+    public function send(string $databaseName, string $collectionName, Query $query, int $offset = 0, int $limit = 100): Promise
     {
 
         return call(static function (ClientSocket $clientSocket, ResponseParser $responseParser) use ($databaseName, $collectionName, $query, $offset, $limit): \Generator {

@@ -6,7 +6,6 @@ require_once 'vendor/autoload.php';
 
 use Amp\ByteStream\ResourceOutputStream;
 use Amp\Loop;
-use Amp\Socket\Socket;
 use function Amp\Socket\connect;
 
 const MSG_HEADER_SIZE = 16;
@@ -37,79 +36,24 @@ const RF_SHARD_CONFIG_STALE = 4;
 const RF_AWAIT_CAPABLE = 8;
 
 Loop::run(static function () {
-    $stdout = new ResourceOutputStream(STDOUT);
+    $stdout = yield \Amp\call(static function () {
+        return new ResourceOutputStream(STDOUT);
+    });
     $uri = '0.0.0.0:27017';
-    /** @var Socket $socket */
+    /** @var \Amp\Socket\ClientSocket $socket */
     $socket = yield connect('tcp://' . $uri);
 
+    $mongoClient = new \Mongovno\Client($socket, new \Mongovno\ResponseParser());
+    $data = yield $mongoClient->send('common', 'domain_cat', [
+        '$query' => [
+            '_id' => ['$eq' => 'api.test.site.com'],
+        ]
 
-//    struct MsgHeader {
-//        int32   messageLength; // total message size, including this
-//    int32   requestID;     // identifier for this message
-//    int32   responseTo;    // requestID from the original request
-//                           //   (used in responses from db)
-//    int32   opCode;        // request type - see table below for details
-//}
+    ]);
 
-//    struct OP_QUERY {
-//        MsgHeader header;                 // standard message header
-//    int32     flags;                  // bit vector of query options.  See below for details.
-//    cstring   fullCollectionName ;    // "dbname.collectionname"
-//    int32     numberToSkip;           // number of documents to skip
-//    int32     numberToReturn;         // number of documents to return
-//                                      //  in the first OP_REPLY batch
-//    document  query;                  // query object.  See below for details.
-//  [ document  returnFieldsSelector; ] // Optional. Selector indicating the fields
-//                                      //  to return.  See below for details.
-//}
+    $d = iterator_to_array($data);
+    $kek = '';
 
-
-    //db - name common
-    $data = pack(
-        'Va*xVVa*',
-        0,
-        'common.domain_cat',
-//        'common.domain_cat',
-        0,
-        5,
-        MongoDB\BSON\fromPHP(
-            [
-                '$query' => [
-                    '_id' => ['$eq' => 'api.test.site.com'],
-//                    ['filter' => [ '_id'=> ['$eq' => 'api.test.site.com' ]]]
-                ]
-
-            ]
-        )
-    );
-
-    $header = pack('V4', MSG_HEADER_SIZE + strlen($data), '123123123', 0, OP_QUERY);
-
-    $message = $header . $data;
-
-//    $stdout->write($message);
-    yield $socket->write($message);
-//
-//    while (null !== $chunk = yield $socket->read()) {
-//        yield $stdout->write($chunk);
-//    }
-    $parser = new \Mongovno\ResponseParser();
-    while (($chunk = yield $socket->read()) !== null) {
-        $data = $chunk;
-        $parsed = $parser->parse($data);
-        $header = $parsed->header();
-        $data = iterator_to_array($parsed->result()->documents());
-        yield $stdout->write("$chunk\n");
-//        echo $chunk.PHP_EOL;
-    }
-
-//    $data = yield \Amp\ByteStream\buffer($socket);
-
-    yield $stdout->write($data);
+    $socket->close();
 
 });
-
-function parse()
-{
-
-}
